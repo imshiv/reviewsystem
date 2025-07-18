@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-init
+spec:
+  template:
+    spec:
+      containers:
+      - name: kafka-topic
+        image: confluentinc/cp-kafka:7.5.0
+        command: ["/bin/sh", "-c"]
+        args:
+          - kafka-topics --create --topic reviews             --bootstrap-server kafka:9092             --replication-factor 1             --partitions 1             --if-not-exists;
+      restartPolicy: OnFailure

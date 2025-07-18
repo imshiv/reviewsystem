@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: review-system-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/imshiv/review-system-java
+    targetRevision: HEAD
+    path: helm/review-system
+    helm:
+      valueFiles:
+        - values-staging.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: review-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

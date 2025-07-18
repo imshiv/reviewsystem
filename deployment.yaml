@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-service
+  template:
+    metadata:
+      labels:
+        app: review-service
+    spec:
+      containers:
+      - name: review-service
+        image: your-dockerhub/review-service:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://postgresql:5432/reviewsdb
+        - name: SPRING_DATASOURCE_USERNAME
+          value: reviewuser
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: reviewpass
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: kafka:9092

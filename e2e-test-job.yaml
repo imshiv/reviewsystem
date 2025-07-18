@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: review-system-e2e-test
+  namespace: default
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+      - name: tester
+        image: curlimages/curl:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            echo "✅ Checking service health..."
+            curl -s http://review-system:8080/actuator/health || exit 1
+
+            echo "🚀 Sending test review..."
+            curl -X POST http://review-system:8080/api/reviews/test               -H "Content-Type: application/json"               -d '{"reviewId":"e2e123", "source":"Booking.com", "content":"Everything works great!", "rating":5, "timestamp":"2025-07-18T12:00:00Z"}'
+
+            echo "📥 Fetching reviews..."
+            curl -s http://review-system:8080/api/reviews | grep e2e123 && echo "✅ Review persisted!"
+
+            echo "🎯 E2E test completed successfully."
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+      restartPolicy: Never
